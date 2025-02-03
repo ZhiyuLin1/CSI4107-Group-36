@@ -1,6 +1,10 @@
-# import nltk
-# nltk.download('punkt')
-# nltk.download('punkt_tab')
+# Hengjing Zhang 300288003
+# Tom Cui 300345709
+# Zhiyu Lin 300255509
+
+import nltk
+nltk.download('punkt')
+nltk.download('punkt_tab')
 
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
@@ -74,3 +78,7 @@ if __name__ == "__main__":
     processed_tokens = preprocess_text(sample_text)
     print("Processed tokens:", processed_tokens)
 '''
+if __name__ == "__main__":
+    sample_text = "This is a sample document! It includes numbers like 123 and punctuation."
+    processed_tokens = preprocess_text(sample_text)
+    print("Processed tokens:", processed_tokens)
