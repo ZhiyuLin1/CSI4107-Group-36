@@ -13,10 +13,14 @@ from nltk.stem import PorterStemmer
 # Loads stopwords from a text file, where each line contains one stopword.
 # Returns a set of stopwords.
 def load_stopwords(filepath="stopwords.txt"):
+    stopwords = set()
     with open(filepath, 'r', encoding='utf-8') as f:
-        # Read lines, strip any whitespace, and ignore blank lines.
-        stopwords = {line.strip() for line in f if line.strip()}
+        for line in f:
+            stripped_line = line.strip()
+            if stripped_line:  # ignore blank line
+                stopwords.add(stripped_line)
     return stopwords
+
 
 STOP_WORDS = load_stopwords("stopwords.txt")
 stemmer = PorterStemmer()
