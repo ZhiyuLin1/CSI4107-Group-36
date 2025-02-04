@@ -2,9 +2,9 @@
 # Tom Cui 300345709
 # Zhiyu Lin 300255509
 
-import nltk
-nltk.download('punkt')
-nltk.download('punkt_tab')
+# import nltk
+# nltk.download('punkt')
+# nltk.download('punkt_tab')
 
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
