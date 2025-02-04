@@ -84,7 +84,3 @@ if __name__ == "__main__":
     processed_tokens = preprocess_text(sample_text)
     print("Processed tokens:", processed_tokens)
 '''
-if __name__ == "__main__":
-    sample_text = "This is a sample document! It includes numbers like 123 and punctuation."
-    processed_tokens = preprocess_text(sample_text)
-    print("Processed tokens:", processed_tokens)
