@@ -42,7 +42,9 @@ def remove_non_alphabetic(tokens):
 
 
 # Removes tokens that appear in the provided stop_words set.
-def remove_stopwords(tokens, stop_words = STOP_WORDS):
+def remove_stopwords(tokens, stop_words=None):
+    if stop_words is None:
+        stop_words = STOP_WORDS
     filtered_tokens = []
     for token in tokens:
         if token not in stop_words:
