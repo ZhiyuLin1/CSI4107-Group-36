@@ -2,9 +2,23 @@
 
 ## Group number: 36
 
-### Members:  Hengjing Zhang  300288003	Tom Cui 300345709	ZhiyuLin300255509
+### Members:  Hengjing Zhang    300288003 	
+
+### 		      Tom  Cui      300345709	
+
+### 		     Zhiyu Lin      300255509
 
 ______
+
+## work distribution
+
+Henjing Zhang	-Preprocessing
+
+Tom Cui	-Indexing
+
+Zhiyu Lin	-Ranking
+
+
 
 ## Assignment 1 Overview
 
@@ -12,7 +26,7 @@ This Assignment is designed to perform text similarity checking using a multi-st
 
 
 
-## Folder Layout:
+## Folder Layout
 
 ```
 A1/
@@ -100,46 +114,165 @@ A1/
    - **Sparse Representations:** Only stores non-zero TF-IDF values to save memory.
    - **Batch Processing:** Processes documents and queries in batches to improve I/O performance.
 
-## Vocabulary Details
-
-- **Vocabulary Size:** The vocabulary consists of all unique tokens after preprocessing, including tokenization, stop-word removal, and stemming.
-- **Sample of 100 Tokens:** (This sample will be generated from the dataset during actual execution.)
-
-## Query Results
-
-- First 10 Answers for the First 2 Queries:
-
-  Example from 
-
-  ```
-  Results.txt
-  ```
-
-  :
-
-  ```
-  0 Q0 10906636 1 0.1253 my_run
-  0 Q0 26731863 2 0.1180 my_run
-  0 Q0 26071782 3 0.1099 my_run
-  0 Q0 994800 4 0.0968 my_run
-  0 Q0 37949139 5 0.0892 my_run
-  0 Q0 21439640 6 0.0879 my_run
-  0 Q0 7581911 7 0.0834 my_run
-  0 Q0 35008773 8 0.0825 my_run
-  ```
-
 ## Mean Average Precision (MAP) Score
 
-The MAP score is computed using `trec_eval` based on the results from the `Results.txt` file.
+The MAP score is computed using `trec_eval` based on the results from the `Results.txt` file. Please make sure to install `trec_eval` and use `make` command to build the executable for MAP.
 
 - **Test Setup:**
 
   - **Run 1:** Using only titles from the queries.
   - **Run 2:** Using both titles and full text from the queries.
 
+- After running for the MAP (Mean Average Precision), these were our results:
+
+  ```
+  runid                   all     my_run
+  map                     all     0.4258
+  ```
+
 - **Discussion:**
 
-  Typically, using both titles and full text provides richer context, leading to better ranking accuracy and higher MAP scores. However, this can vary depending on the dataset and query nature. The additional context helps in better term matching and relevance estimation.
+  Typically, using both titles and full text provides richer context, leading to better ranking accuracy and higher MAP scores. However, this can vary depending on the dataset and query nature. The additional context helps in better term matching and relevance estimation. MAP represents an overall performance of our searching, and we managed to achieve a 42.58% Mean Average Precision. Considering we have a limited data set, we think this is pretty good.
+
+## Sample tokens from the vocabulary
+
+```
+aa
+aaa
+aab
+aabenhus
+aacr
+aad
+aag
+aai
+aams
+aarhus
+aaronquinlan
+aas
+aasv
+aatf
+aauaaa
+aav
+ab
+abad
+abandoned
+abandoning
+abasic
+abbe
+abberant
+abbott
+abbreviated
+abc
+abciximab
+abd
+abdb
+abdomen
+abdominal
+abduction
+aberrant
+aberrantly
+aberration
+aberrations
+abeta
+abi
+abilities
+ability
+abiotic
+abiraterone
+abl
+ablate
+ablated
+ablating
+ablation
+able
+abmd
+abms
+abnormal
+abnormalities
+abnormality
+abnormally
+abolish
+abolished
+abolishes
+abolishing
+abort
+aborted
+aborting
+abortion
+abortions
+abortive
+aborts
+abound
+abounds
+abp
+abpi
+abrb
+abroad
+abrogate
+abrogated
+abrogates
+abrogating
+abrogation
+abrupt
+abruption
+abruptly
+abs
+abscess
+abscesses
+abscises
+abscisic
+abscission
+absence
+absent
+absolute
+absolutely
+absorbable
+absorbance
+absorbed
+absorbing
+absorbs
+absorptiometry
+absorption
+absorptive
+abstain
+abstained
+abstainers
+```
+
+## Sample queries
+
+**Query 0 (10 result)**
+
+```
+0 10906636 The carboxyl terminus of human cytomegalovirus-encoded 7 transmembrane receptor US28 camouflages agonism by mediating constitutive endocytosis.
+0 26731863 Distinct and essential roles of transcription factors IRF-3 and IRF-7 in response to viruses for IFN-alpha/beta gene induction.
+0 26071782 Latent membrane protein 1 of Epstein–Barr virus coordinately regulates proliferation with control of apoptosis
+0 994800 TCR ligand density and affinity determine peripheral induction of Foxp3 in vivo
+0 37949139 The in vitro effect of dandelions antioxidants on microsomal lipid peroxidation.
+0 21439640 Macrophages induce COX-2 expression in breast cancer cells: role of IL-1β autoamplification.
+0 7581911 Human embryonic stem cells with biological and epigenetic characteristics similar to those of mouse ESCs.
+0 35008773 Neural induction and early patterning in vertebrates.
+0 2566674 Ribose 2′-O-methylation provides a molecular signature for the distinction of self and non-self mRNA dependent on the RNA sensor Mda5
+0 13231899 In situ regulation of DC subsets and T cells mediates tumor regression in mice.
+```
+
+**Query 1(10 result)**
+
+```
+1 10906636 The carboxyl terminus of human cytomegalovirus-encoded 7 transmembrane receptor US28 camouflages agonism by mediating constitutive endocytosis.
+1 994800 TCR ligand density and affinity determine peripheral induction of Foxp3 in vivo
+1 37949139 The in vitro effect of dandelions antioxidants on microsomal lipid peroxidation.
+1 21439640 Macrophages induce COX-2 expression in breast cancer cells: role of IL-1β autoamplification.
+1 26071782 Latent membrane protein 1 of Epstein–Barr virus coordinately regulates proliferation with control of apoptosis
+1 7581911 Human embryonic stem cells with biological and epigenetic characteristics similar to those of mouse ESCs.
+1 26731863 Distinct and essential roles of transcription factors IRF-3 and IRF-7 in response to viruses for IFN-alpha/beta gene induction.
+1 35008773 Neural induction and early patterning in vertebrates.
+1 13231899 In situ regulation of DC subsets and T cells mediates tumor regression in mice.
+1 10786948 An efficient nonviral method to generate integration-free human-induced pluripotent stem cells from cord blood and peripheral blood cells.
+1 6227220 Autophagy deficiency leads to protection from obesity and insulin resistance by inducing Fgf21 as a mitokine
+```
+
+
 
 ## Conclusion
 

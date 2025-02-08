@@ -64,10 +64,10 @@ def stem_tokens(tokens):
 def preprocess_text(text, apply_stemming=True):
     """
     Preprocesses input text by:
-      1. Tokenizing.
-      2. Removing non-alphabetic tokens.
-      3. Removing stopwords.
-      4. Optionally applying stemming.
+    1. Tokenizing.
+    2. Removing non-alphabetic tokens.
+    3. Removing stopwords.
+    4. Optionally applying stemming.
     Returns a list of cleaned tokens.
     """
     tokens = tokenize(text)
@@ -78,9 +78,4 @@ def preprocess_text(text, apply_stemming=True):
         tokens = stem_tokens(tokens)
     return tokens
 
-'''
-if __name__ == "__main__":
-    sample_text = "This is a sample document! It includes numbers like 123 and punctuation."
-    processed_tokens = preprocess_text(sample_text)
-    print("Processed tokens:", processed_tokens)
-'''
+
