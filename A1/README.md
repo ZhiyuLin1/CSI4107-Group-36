@@ -1,30 +1,49 @@
 # CSI4107 Assignment 1 
 
-## Group number: 36
+**Hengjing Zhang		300288003** 	
 
-### Members:  Hengjing Zhang    300288003 	
+**Tom Cui			300345709**	
 
-### 		      Tom  Cui      300345709	
+**Zhiyu Lin		300255509**
 
-### 		     Zhiyu Lin      300255509
+## Work distribution
 
-______
+### ==**Hengjing Zhang, Tom Cui**==
 
-## work distribution
+**Preprocessing Module:**
 
-Henjing Zhang	-Preprocessing
+- Implemented text tokenization, stop word removal, and stemming in `preprocessing.py`.
+- Ensured that the module correctly cleans the text data from both documents and queries.
 
-Tom Cui	-Indexing
+**Documentation:**
 
-Zhiyu Lin	-Ranking
+- Prepared documentation and explanations for the preprocessing step.
 
+### ==**Zhiyu Lin, Tom Cui**==
 
+**Indexing Module:**
 
-## Assignment 1 Overview
+- Developed the inverted index construction in `indexing.py`, including saving and loading the index.
+- Worked on integrating the preprocessed tokens into a fast retrieval structure.
+
+**Testing:**
+
+- Performed unit tests on the indexing module to ensure the index correctly maps tokens to document IDs and frequencies.
+
+### ==**Hengjing Zhang, Zhiyu Lin**==
+
+**Retrieval & Ranking Module:**
+
+- Implemented the cosine similarity scoring and ranking algorithm in `ranking.py` using TF-IDF weighting.
+- Integrated the retrieval system with the main pipeline (in `main.py`) to process test queries and output results in the required format.
+
+**Evaluation Integration:**
+
+- Set up and ran TREC eval for performance measurement and contributed to the analysis of the MAP score.
+
+## Overview
 
 This Assignment is designed to perform text similarity checking using a multi-step process involving preprocessing, indexing, and ranking. The system uses natural language processing (NLP) techniques to tokenize text, remove stop-words, create an inverted index, and rank documents based on their similarity to user queries using Term Frequency-Inverse Document Frequency (TF-IDF) and cosine similarity algorithms.
-
-
 
 ## Folder Layout
 
@@ -41,8 +60,6 @@ A1/
 ├── ranking.py               # Module for retrieval and ranking (e.g., using cosine similarity or BM25)
 └── main.py                  # Main driver script to run the IR system
 ```
-
-
 
 ## Program Functionality
 
@@ -97,8 +114,6 @@ A1/
       #nltk.download('punkt_tab')
      ```
 
-     
-
 2. **Execution:** Run the main script:
 
    ```bash
@@ -120,7 +135,7 @@ A1/
    
    - **TF-IDF Calculation:** Quantifies term importance in documents relative to the corpus.
    
-     ```
+     ```python
      def compute_idf(inverted_index, total_docs):
      
          #Compute the inverse document frequency (IDF) for each term.
@@ -132,11 +147,9 @@ A1/
          return idf
      ```
    
-     
-   
    - **Cosine Similarity:** Measures the similarity between document and query vectors.
    
-     ```
+     ```python
      def cosine_similarity(vec1, vec2):
          #Compute cosine similarity between two TF-IDF vectors (dictionaries).
          dot_product = 0.0
@@ -149,10 +162,6 @@ A1/
              return 0.0
          return dot_product / (norm1 * norm2)
      ```
-   
-     
-   
-   
    
 2. **Data Structures:**
    - **Dictionaries:** Used extensively for the inverted index, IDF storage, and TF-IDF vectors.
