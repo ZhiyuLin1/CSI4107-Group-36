@@ -49,7 +49,7 @@ This Assignment is designed to perform text similarity checking using a multi-st
 
 ```
 A1/
-├── dataset/                  # Dataset folder
+├── dataset/                 # Dataset folder
 │   ├── corpus.jsonl         # Corpus file
 │   ├── queries.jsonl        # Queries file
 │   └── qrels/               # Folder with relevance judgments
@@ -108,15 +108,15 @@ A1/
 
    - Comment out the following code once the code has ran for once.
 
-     ```
-      #import nltk
-      #nltk.download('punkt')
-      #nltk.download('punkt_tab')
+     ```python
+      # import nltk
+      # nltk.download('punkt')
+      # nltk.download('punkt_tab')
      ```
 
 2. **Execution:** Run the main script:
 
-   ```bash
+   ```python
    python main.py
    ```
 
@@ -195,7 +195,7 @@ The MAP score is computed using `trec_eval` based on the results from the `Resul
 
 ## Sample tokens from the vocabulary
 
-```
+```bash
 aa
 aaa
 aab
