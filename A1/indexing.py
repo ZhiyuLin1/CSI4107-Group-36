@@ -31,15 +31,4 @@ def load_inverted_index(filepath="inverted_index.json"):
         inverted_index = json.load(f)
     return inverted_index
 
-# for testing
-'''
-if __name__ == "__main__":
-    # Example: build a dummy index with a single document.
-    docs = [
-        {"_id": "doc1", "preprocessed_text": ["this", "is", "a", "test"]},
-        {"_id": "doc2", "preprocessed_text": ["this", "test", "is", "another", "example"]}
-    ]
-    index = build_inverted_index(docs)
-    print("Inverted index:", index)
-    save_inverted_index(index)
-'''
+

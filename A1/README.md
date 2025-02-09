@@ -86,7 +86,18 @@ A1/
 1. **Dependencies:**
 
    - Install NLTK: `pip install nltk`
+
    - Ensure `stopwords.txt`, `corpus.jsonl`, and `queries.jsonl` are in the `dataset/` folder.
+
+   - Comment out the following code once the code has ran for once.
+
+     ```
+      #import nltk
+      #nltk.download('punkt')
+      #nltk.download('punkt_tab')
+     ```
+
+     
 
 2. **Execution:** Run the main script:
 
@@ -100,15 +111,54 @@ A1/
 
 1. **Algorithms:**
    - **Tokenization:** Uses NLTK's `word_tokenize` for splitting text into tokens.
+   
    - **Stop-word Removal:** Removes common, non-informative words to reduce noise.
+   
    - **Porter Stemming Algorithm:** Reduces words to their base forms to consolidate similar terms.
+   
    - **Inverted Index:** Maps tokens to document IDs and frequencies for efficient retrieval.
+   
    - **TF-IDF Calculation:** Quantifies term importance in documents relative to the corpus.
+   
+     ```
+     def compute_idf(inverted_index, total_docs):
+     
+         #Compute the inverse document frequency (IDF) for each term.
+         #Uses the smoothed formula: log((N + 1) / (df + 1)) + 1.
+         idf = {}
+         for token, doc_dict in inverted_index.items():
+             df = len(doc_dict)
+             idf[token] = math.log((total_docs + 1) / (df + 1)) + 1
+         return idf
+     ```
+   
+     
+   
    - **Cosine Similarity:** Measures the similarity between document and query vectors.
+   
+     ```
+     def cosine_similarity(vec1, vec2):
+         #Compute cosine similarity between two TF-IDF vectors (dictionaries).
+         dot_product = 0.0
+         for token, weight in vec1.items():
+             if token in vec2:
+                 dot_product += weight * vec2[token]
+         norm1 = math.sqrt(sum(weight ** 2 for weight in vec1.values()))
+         norm2 = math.sqrt(sum(weight ** 2 for weight in vec2.values()))
+         if norm1 == 0 or norm2 == 0:
+             return 0.0
+         return dot_product / (norm1 * norm2)
+     ```
+   
+     
+   
+   
+   
 2. **Data Structures:**
    - **Dictionaries:** Used extensively for the inverted index, IDF storage, and TF-IDF vectors.
    - **Lists:** To store tokens, documents, and queries.
    - **Sets:** Optimizes membership checks during query processing.
+   
 3. **Optimizations:**
    - **Efficient Preprocessing:** Reduces computational overhead by filtering out unnecessary tokens early.
    - **Sparse Representations:** Only stores non-zero TF-IDF values to save memory.

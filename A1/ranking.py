@@ -9,10 +9,9 @@ from indexing import load_inverted_index
 
 
 def compute_idf(inverted_index, total_docs):
-    """
-    Compute the inverse document frequency (IDF) for each term.
-    Uses the smoothed formula: log((N + 1) / (df + 1)) + 1.
-    """
+
+    #Compute the inverse document frequency (IDF) for each term.
+    #Uses the smoothed formula: log((N + 1) / (df + 1)) + 1.
     idf = {}
     for token, doc_dict in inverted_index.items():
         df = len(doc_dict)
@@ -21,10 +20,9 @@ def compute_idf(inverted_index, total_docs):
 
 
 def compute_vector(tokens, idf):
-    """
-    Compute a TF-IDF vector for a list of tokens.
-    The vector is a dictionary mapping tokens to TF-IDF weights.
-    """
+    #Compute a TF-IDF vector for a list of tokens.
+    #The vector is a dictionary mapping tokens to TF-IDF weights.
+
     vector = {}
     # Compute term frequency (TF)
     for token in tokens:
@@ -36,9 +34,7 @@ def compute_vector(tokens, idf):
 
 
 def cosine_similarity(vec1, vec2):
-    """
-    Compute cosine similarity between two TF-IDF vectors (dictionaries).
-    """
+    #Compute cosine similarity between two TF-IDF vectors (dictionaries).
     dot_product = 0.0
     for token, weight in vec1.items():
         if token in vec2:
@@ -51,14 +47,6 @@ def cosine_similarity(vec1, vec2):
 
 
 def rank_documents_for_query(query, corpus, inverted_index, idf):
-    """
-    Given a query (as a string), the corpus (a list of documents), the inverted index, and the IDF dictionary:
-      1. Preprocess the query.
-      2. Build the TF-IDF vector for the query.
-      3. Identify candidate documents (those that contain at least one query token).
-      4. Compute cosine similarity between the query vector and each candidate document's vector.
-      5. Return a sorted list of (doc_id, score) tuples.
-    """
     # Preprocess the query
     query_tokens = preprocess_text(query)
     query_vector = compute_vector(query_tokens, idf)
