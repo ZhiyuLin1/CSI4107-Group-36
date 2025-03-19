@@ -129,7 +129,7 @@
       <option name="presentableId" value="Default" />
       <updated>1742352620556</updated>
       <workItem from="1742406263044" duration="1340000" />
-      <workItem from="1742408660831" duration="1074000" />
+      <workItem from="1742408660831" duration="3019000" />
     </task>
     <servers />
   </component>
@@ -137,6 +137,6 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/A2$neural_sent2vec.coverage" NAME="neural_sent2vec 覆盖结果" MODIFIED="1742409117166" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/A2$neural_sent2vec.coverage" NAME="neural_sent2vec 覆盖结果" MODIFIED="1742411835347" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>
 </project>
