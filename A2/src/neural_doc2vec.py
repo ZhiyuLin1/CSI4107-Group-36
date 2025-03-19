@@ -5,7 +5,7 @@ from preprocessing import preprocess_text
 
 def main():
     # Load the pretrained doc2vec model
-    model_path = "models/doc2vec.bin"
+    model_path = "../models/doc2vec.bin"
     model = Doc2Vec.load(model_path)
 
     # Sample text to test the model

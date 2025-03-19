@@ -12,7 +12,7 @@ from nltk.stem import PorterStemmer
 
 # Loads stopwords from a text file, where each line contains one stopword.
 # Returns a set of stopwords.
-def load_stopwords(filepath="stopwords.txt"):
+def load_stopwords(filepath="../stopwords.txt"):
     stopwords = set()
     with open(filepath, 'r', encoding='utf-8') as f:
         for line in f:
@@ -22,7 +22,7 @@ def load_stopwords(filepath="stopwords.txt"):
     return stopwords
 
 
-STOP_WORDS = load_stopwords("stopwords.txt")
+STOP_WORDS = load_stopwords("../stopwords.txt")
 stemmer = PorterStemmer()
 
 
