@@ -57,7 +57,7 @@ A1/
 ├── stopwords.txt            # Text file containing the list of stopwords (one per line)
 ├── preprocessing.py         # Module for preprocessing (tokenization, filtering, etc.)
 ├── indexing.py              # Module for building the inverted index
-├── ranking.py               # Module for retrieval and ranking (e.g., using cosine similarity or BM25)
+├── ranking.py               # Module for retrieval and ranking
 └── main.py                  # Main driver script to run the IR system
 ```
 
