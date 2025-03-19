@@ -32,7 +32,10 @@
       <change beforePath="$PROJECT_DIR$/dataset/corpus.jsonl" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/corpus.jsonl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dataset/qrels/test.tsv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/qrels/test.tsv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dataset/queries.jsonl" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/queries.jsonl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/indexing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/indexing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/neural_doc2vec.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/neural_doc2vec.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/preprocessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/preprocessing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ranking.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ranking.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/stopwords.txt" beforeDir="false" afterPath="$PROJECT_DIR$/stopwords.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vocabulary.txt" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
@@ -66,7 +69,7 @@
     "Python.neural_sent2vec.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "<未知>",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/hengj/Desktop/CSI4107-Group-36/A2/src",
     "node.js.detected.package.eslint": "true",
@@ -130,6 +133,7 @@
       <updated>1742352620556</updated>
       <workItem from="1742406263044" duration="1340000" />
       <workItem from="1742408660831" duration="3736000" />
+      <workItem from="1742414065018" duration="610000" />
     </task>
     <servers />
   </component>
