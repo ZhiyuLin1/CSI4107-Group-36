@@ -8,8 +8,8 @@ Charlie Zhang, Tom Cui & Zhiyu Lin
 
 This repository contains assignments from CSI4107 Information Retrieval and the Internet, a fourth year computer science course at the University of Ottawa.
 
-- **Assignment 1: Information retrieval system** 
-- Assignment 2: Neural Information Retrieval System
+- Assignment 1: Information retrieval system 
+- **Assignment 2: Neural Information Retrieval System**
 
 ### Course Information
 
