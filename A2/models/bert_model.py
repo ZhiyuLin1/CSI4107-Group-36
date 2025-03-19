@@ -1,8 +1,3 @@
-"""
-BERT Model for generating sentence embeddings using SentenceTransformer.
-This module encapsulates loading the model and generating embeddings for given texts.
-"""
-
 from sentence_transformers import SentenceTransformer
 
 
