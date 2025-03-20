@@ -1,23 +1,18 @@
+# Hengjing Zhang 300288003
+# Tom Cui 300345709
+# Zhiyu Lin 300255509
+
 from sentence_transformers import SentenceTransformer
 
-
 class BertEmbedder:
+
+    # Initializes the BERT embedder by loading a pre-trained model.
     def __init__(self, model_name="sentence-transformers/bert-base-nli-mean-tokens"):
-        """
-        Initializes the BERT embedder by loading a pre-trained model.
-        :param model_name: Name or path of the pre-trained SentenceTransformer model.
-        """
         print("Loading BERT model...")
         self.model = SentenceTransformer(model_name)
 
+    # Encodes one or more texts into embeddings.
     def encode(self, texts):
-        """
-        Encodes one or more texts into embeddings.
-
-        :param texts: A single string or a list of strings.
-        :return: For a single text, returns a 1D numpy array embedding.
-                 For a list of texts, returns a list of numpy array embeddings.
-        """
         if isinstance(texts, list):
             embeddings = self.model.encode(texts)
         else:
