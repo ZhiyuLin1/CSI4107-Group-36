@@ -7,6 +7,7 @@ from preprocessing import preprocess_text
 from indexing import build_inverted_index, save_inverted_index
 from ranking import compute_idf, rank_documents_for_query
 from neural_ranking import neural_rerank_bert, neural_rerank_use
+import time
 
 
 def load_corpus(filepath="dataset/corpus.jsonl"):
@@ -27,6 +28,9 @@ def load_queries(filepath="dataset/queries.jsonl"):
 
 if __name__ == "__main__":
     # Load corpus and queries.
+
+    start_time = time.time() # running time start
+
     corpus = load_corpus()
     queries = load_queries()
     print(f"Loaded {len(corpus)} documents and {len(queries)} queries.")
@@ -104,3 +108,8 @@ if __name__ == "__main__":
     print("Baseline TF-IDF: ", output_tfidf)
     print("BERT-based:       ", output_bert)
     print("USE-based:        ", output_use)
+
+    # running time end
+    end_time = time.time()
+    total_time = end_time - start_time
+    print("Total execution time: {:.2f} seconds".format(total_time))
