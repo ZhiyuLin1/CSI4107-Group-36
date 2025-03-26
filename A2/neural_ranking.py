@@ -18,55 +18,116 @@ def vectorized_cosine_similarity(query_embedding, doc_embeddings):
     dot_products = np.dot(doc_embeddings, query_embedding)
     doc_norms = np.linalg.norm(doc_embeddings, axis=1)
     query_norm = np.linalg.norm(query_embedding)
-    # Add a small epsilon to avoid division by zero.
     similarities = dot_products / (doc_norms * query_norm + 1e-10)
     return similarities
 
 
-def neural_rerank_bert(query_text, docs):
+def normalize_scores(scores):
+    """
+    Normalizes an array of scores to the range [0, 1].
+    """
+    min_score = np.min(scores)
+    max_score = np.max(scores)
+    if max_score == min_score:
+        return np.full_like(scores, 0.5)
+    return (scores - min_score) / (max_score - min_score)
+
+
+def neural_rerank_bert(query_text, docs, bert_embedder=None):
     """
     Re-ranks a list of candidate documents using BERT-based embeddings in a vectorized manner.
 
-    :param query_text: A string containing the query.
-    :param docs: A list of document dictionaries; each must have a 'text' field.
-    :return: A sorted list of tuples (document, similarity score) in descending order.
+    :param query_text: Query string.
+    :param docs: List of document dictionaries (each with a 'text' field).
+    :param bert_embedder: (Optional) Pre-loaded BertEmbedder instance.
+    :return: Sorted list of tuples (document, similarity score) in descending order.
     """
-    bert = BertEmbedder()
-    # Encode the query to obtain a (D,) vector.
-    query_embedding = bert.encode(query_text)
-    # Encode all candidate documents to obtain a (N, D) array.
+    if bert_embedder is None:
+        bert_embedder = BertEmbedder()
+    query_embedding = bert_embedder.encode(query_text)
     doc_texts = [doc['text'] for doc in docs]
-    doc_embeddings = bert.encode(doc_texts)
-
-    # Compute cosine similarities in one go.
+    doc_embeddings = bert_embedder.encode(doc_texts)
     similarities = vectorized_cosine_similarity(query_embedding, doc_embeddings)
     results = list(zip(docs, similarities))
     results.sort(key=lambda x: x[1], reverse=True)
     return results
 
 
-def neural_rerank_use(query_text, docs):
+def neural_rerank_use(query_text, docs, use_embedder=None):
     """
     Re-ranks a list of candidate documents using USE-based embeddings in a vectorized manner.
 
-    :param query_text: A string containing the query.
-    :param docs: A list of document dictionaries; each must have a 'text' field.
-    :return: A sorted list of tuples (document, similarity score) in descending order.
+    :param query_text: Query string.
+    :param docs: List of document dictionaries (each with a 'text' field).
+    :param use_embedder: (Optional) Pre-loaded USEEmbedder instance.
+    :return: Sorted list of tuples (document, similarity score) in descending order.
     """
-    use = USEEmbedder()
-    # USE returns a (1, D) array for a single text; extract the vector.
-    query_embedding_full = use.encode(query_text)
-    query_embedding = query_embedding_full[0]
-
-    # Encode all candidate documents.
+    if use_embedder is None:
+        use_embedder = USEEmbedder()
+    query_embedding = use_embedder.encode(query_text)[0]
     doc_texts = [doc['text'] for doc in docs]
-    doc_embeddings = use.encode(doc_texts)
-
-    # Compute cosine similarities vectorized.
+    doc_embeddings = use_embedder.encode(doc_texts)
     similarities = vectorized_cosine_similarity(query_embedding, doc_embeddings)
     results = list(zip(docs, similarities))
     results.sort(key=lambda x: x[1], reverse=True)
     return results
+
+
+def neural_rerank_bert_hybrid(query_text, docs, baseline_scores, alpha=0.5, bert_embedder=None):
+    """
+    Hybrid re-ranking using BERT-based embeddings and baseline scores.
+
+    :param query_text: Query string.
+    :param docs: List of document dictionaries (each with a 'text' field).
+    :param baseline_scores: List or numpy array of baseline scores corresponding to docs.
+    :param alpha: Weight for neural score (0 <= alpha <= 1).
+    :param bert_embedder: (Optional) Pre-loaded BertEmbedder instance.
+    :return: Sorted list of tuples (document, hybrid score) in descending order.
+    """
+    if bert_embedder is None:
+        bert_embedder = BertEmbedder()
+    query_embedding = bert_embedder.encode(query_text)
+    doc_texts = [doc['text'] for doc in docs]
+    doc_embeddings = bert_embedder.encode(doc_texts)
+    neural_scores = vectorized_cosine_similarity(query_embedding, doc_embeddings)
+
+    # Normalize both sets of scores.
+    neural_norm = normalize_scores(neural_scores)
+    baseline_norm = normalize_scores(np.array(baseline_scores))
+
+    # Compute the hybrid score.
+    hybrid_scores = alpha * neural_norm + (1 - alpha) * baseline_norm
+    results = list(zip(docs, hybrid_scores))
+    results.sort(key=lambda x: x[1], reverse=True)
+    return results
+
+
+def neural_rerank_use_hybrid(query_text, docs, baseline_scores, alpha=0.5, use_embedder=None):
+    """
+    Hybrid re-ranking using USE-based embeddings and baseline scores.
+
+    :param query_text: Query string.
+    :param docs: List of document dictionaries (each with a 'text' field).
+    :param baseline_scores: List or numpy array of baseline scores corresponding to docs.
+    :param alpha: Weight for neural score (0 <= alpha <= 1).
+    :param use_embedder: (Optional) Pre-loaded USEEmbedder instance.
+    :return: Sorted list of tuples (document, hybrid score) in descending order.
+    """
+    if use_embedder is None:
+        use_embedder = USEEmbedder()
+    query_embedding = use_embedder.encode(query_text)[0]
+    doc_texts = [doc['text'] for doc in docs]
+    doc_embeddings = use_embedder.encode(doc_texts)
+    neural_scores = vectorized_cosine_similarity(query_embedding, doc_embeddings)
+
+    neural_norm = normalize_scores(neural_scores)
+    baseline_norm = normalize_scores(np.array(baseline_scores))
+    hybrid_scores = alpha * neural_norm + (1 - alpha) * baseline_norm
+    results = list(zip(docs, hybrid_scores))
+    results.sort(key=lambda x: x[1], reverse=True)
+    return results
+
+
 
 
 
