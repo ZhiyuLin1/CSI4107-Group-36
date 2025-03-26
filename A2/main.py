@@ -56,13 +56,13 @@ def load_baseline_results(filepath="Results_A1.txt"):
 
 
 def normalize_scores(scores):
-    """Normalize a list of scores to the range [0, 1]."""
-    min_score = min(scores)
-    max_score = max(scores)
+    """Normalize an array of scores to the range [0, 1]."""
+    scores = np.array(scores)
+    min_score = np.min(scores)
+    max_score = np.max(scores)
     if max_score == min_score:
-        # If all scores are the same, return a list of constant values (0.5)
-        return [0.5 for _ in scores]
-    return [(s - min_score) / (max_score - min_score) for s in scores]
+        return np.full_like(scores, 0.5)
+    return (scores - min_score) / (max_score - min_score)
 
 
 if __name__ == "__main__":
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     doc_map = {doc["_id"]: doc for doc in corpus}
     query_map = {query["_id"]: query.get("text", "") for query in queries}
 
-    # Pre-load neural models once.
+    # Pre-load neural models.
     bert_embedder = BertEmbedder()
     use_embedder = USEEmbedder()
 
@@ -106,11 +106,8 @@ if __name__ == "__main__":
     output_use = "Results_USE_hybrid.txt"
     run_tag_bert = "run_bert_hybrid"
     run_tag_use = "run_use_hybrid"
+    alpha = 0.35  # weight for neural score in hybrid ranking
 
-    # Weight for hybrid interpolation (tune this as needed)
-    alpha = 0.35
-
-    # Open output files for writing neural re-ranking results.
     with open(output_bert, "w", encoding="utf-8") as out_bert, \
             open(output_use, "w", encoding="utf-8") as out_use:
 
@@ -120,12 +117,12 @@ if __name__ == "__main__":
             if not query_text:
                 continue  # Skip if query text is missing.
 
-            # Get baseline candidate document IDs and scores for this query (top-100).
+            # Retrieve baseline candidate info (top-100 by baseline rank).
             candidate_info = baseline_results[query_id][:100]
             candidate_docs = []
             candidate_ids = []
             baseline_scores = []
-            for doc_id, _, score, _ in candidate_info:
+            for doc_id, rank, score, tag in candidate_info:
                 if doc_id in doc_map:
                     candidate_docs.append(doc_map[doc_id])
                     candidate_ids.append(doc_id)
@@ -133,45 +130,43 @@ if __name__ == "__main__":
             if not candidate_docs:
                 continue
 
-            # Normalize the baseline scores.
-            baseline_norm = normalize_scores(baseline_scores)
-
             # ----- Hybrid BERT-based Re-ranking -----
-            # Compute query embedding.
+            # Compute the query embedding using BERT.
             query_embedding_bert = bert_embedder.encode(query_text)
-            # Get candidate embeddings from precomputed cache.
+            # Fetch candidate embeddings from the precomputed dictionary.
             candidate_embeddings_bert = np.array([bert_embedding_dict[doc_id] for doc_id in candidate_ids])
-            # Compute neural (BERT) cosine similarities.
             neural_scores_bert = vectorized_cosine_similarity(query_embedding_bert, candidate_embeddings_bert)
-            neural_norm_bert = normalize_scores(neural_scores_bert.tolist())
-            # Combine the scores.
-            hybrid_scores_bert = [alpha * n + (1 - alpha) * b for n, b in zip(neural_norm_bert, baseline_norm)]
+            # Normalize both neural and baseline scores.
+            neural_norm_bert = normalize_scores(neural_scores_bert)
+            baseline_norm = normalize_scores(np.array(baseline_scores))
+            hybrid_scores_bert = alpha * neural_norm_bert + (1 - alpha) * baseline_norm
             bert_results = list(zip(candidate_docs, hybrid_scores_bert))
             bert_results.sort(key=lambda x: x[1], reverse=True)
-            rank = 1
+            rank_counter = 1
             for doc, score in bert_results[:100]:
-                out_bert.write(f"{query_id} Q0 {doc['_id']} {rank} {score:.4f} {run_tag_bert}\n")
-                rank += 1
+                out_bert.write(f"{query_id} Q0 {doc['_id']} {rank_counter} {score:.4f} {run_tag_bert}\n")
+                rank_counter += 1
 
             # ----- Hybrid USE-based Re-ranking -----
-            # Compute query embedding (extract 1D vector from USE output).
+            # Compute the query embedding using USE (extract 1D vector from 2D output).
             query_embedding_use = use_embedder.encode(query_text)[0]
             candidate_embeddings_use = np.array([use_embedding_dict[doc_id] for doc_id in candidate_ids])
             neural_scores_use = vectorized_cosine_similarity(query_embedding_use, candidate_embeddings_use)
-            neural_norm_use = normalize_scores(neural_scores_use.tolist())
-            hybrid_scores_use = [alpha * n + (1 - alpha) * b for n, b in zip(neural_norm_use, baseline_norm)]
+            neural_norm_use = normalize_scores(neural_scores_use)
+            hybrid_scores_use = alpha * neural_norm_use + (1 - alpha) * baseline_norm
             use_results = list(zip(candidate_docs, hybrid_scores_use))
             use_results.sort(key=lambda x: x[1], reverse=True)
-            rank = 1
+            rank_counter = 1
             for doc, score in use_results[:100]:
-                out_use.write(f"{query_id} Q0 {doc['_id']} {rank} {score:.4f} {run_tag_use}\n")
-                rank += 1
+                out_use.write(f"{query_id} Q0 {doc['_id']} {rank_counter} {score:.4f} {run_tag_use}\n")
+                rank_counter += 1
 
     print("Hybrid re-ranking results have been written to:")
     print("BERT-based:", output_bert)
     print("USE-based:", output_use)
     end_time = time.time()
     print("Total time: {:.2f} seconds".format(end_time - start_time))
+
 
 
 
