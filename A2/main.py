@@ -108,7 +108,7 @@ if __name__ == "__main__":
     run_tag_use = "run_use_hybrid"
 
     # Weight for hybrid interpolation (tune this as needed)
-    alpha = 0.5
+    alpha = 0.75
 
     # Open output files for writing neural re-ranking results.
     with open(output_bert, "w", encoding="utf-8") as out_bert, \
