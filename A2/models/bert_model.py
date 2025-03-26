@@ -18,11 +18,3 @@ class BertEmbedder:
         else:
             embeddings = self.model.encode([texts])[0]
         return embeddings
-
-
-# Example usage (if you want to test this module independently):
-if __name__ == "__main__":
-    embedder = BertEmbedder()
-    sample_text = "This is a sample sentence for embedding."
-    embedding = embedder.encode(sample_text)
-    print("Embedding shape:", embedding.shape)

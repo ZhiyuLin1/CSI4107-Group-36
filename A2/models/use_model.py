@@ -2,11 +2,6 @@
 # Tom Cui 300345709
 # Zhiyu Lin 300255509
 
-import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"         # Suppress TensorFlow logging.
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"           # Disable oneDNN optimizations.
-
-import tensorflow as tf
 import tensorflow_hub as hub
 
 class USEEmbedder:
@@ -23,9 +18,3 @@ class USEEmbedder:
         embeddings = self.model(texts)
         return embeddings.numpy()
 
-# Example usage (if you want to test this module independently):
-if __name__ == "__main__":
-    embedder = USEEmbedder()
-    sample_text = "This is a sample sentence for USE embedding."
-    embedding = embedder.encode(sample_text)
-    print("Embedding shape:", embedding.shape)
