@@ -9,7 +9,7 @@ import numpy as np
 
 from models.bert_model import BertEmbedder
 from models.use_model import USEEmbedder
-from neural_ranking import vectorized_cosine_similarity  # imported from neural_ranking.py
+from neural_ranking import vectorized_cosine_similarity
 
 
 def load_corpus(filepath="dataset/corpus.jsonl"):
@@ -55,6 +55,16 @@ def load_baseline_results(filepath="Results_A1.txt"):
     return results
 
 
+def normalize_scores(scores):
+    """Normalize a list of scores to the range [0, 1]."""
+    min_score = min(scores)
+    max_score = max(scores)
+    if max_score == min_score:
+        # If all scores are the same, return a list of constant values (0.5)
+        return [0.5 for _ in scores]
+    return [(s - min_score) / (max_score - min_score) for s in scores]
+
+
 if __name__ == "__main__":
     start_time = time.time()
 
@@ -65,7 +75,7 @@ if __name__ == "__main__":
     print(
         f"Loaded {len(corpus)} documents, {len(queries)} queries, and baseline results for {len(baseline_results)} queries.")
 
-    # Create fast lookup mappings.
+    # Build fast lookup mappings.
     doc_map = {doc["_id"]: doc for doc in corpus}
     query_map = {query["_id"]: query.get("text", "") for query in queries}
 
@@ -92,63 +102,76 @@ if __name__ == "__main__":
     use_embedding_dict = dict(zip(candidate_doc_ids, use_candidate_embeddings))
 
     # Define output file names and run tags.
-    output_bert = "Results_BERT.txt"
-    output_use = "Results_USE.txt"
-    run_tag_bert = "run_bert"
-    run_tag_use = "run_use"
+    output_bert = "Results_BERT_hybrid.txt"
+    output_use = "Results_USE_hybrid.txt"
+    run_tag_bert = "run_bert_hybrid"
+    run_tag_use = "run_use_hybrid"
+
+    # Weight for hybrid interpolation (tune this as needed)
+    alpha = 0.5
 
     # Open output files for writing neural re-ranking results.
     with open(output_bert, "w", encoding="utf-8") as out_bert, \
             open(output_use, "w", encoding="utf-8") as out_use:
 
-        # Process queries in ascending order (by query id).
+        # Process queries in ascending order.
         for query_id in sorted(baseline_results, key=lambda q: int(q)):
             query_text = query_map.get(query_id, "")
             if not query_text:
                 continue  # Skip if query text is missing.
 
-            # Get baseline candidate document IDs for this query (top-100 by baseline rank).
+            # Get baseline candidate document IDs and scores for this query (top-100).
             candidate_info = baseline_results[query_id][:100]
             candidate_docs = []
             candidate_ids = []
-            for doc_id, _, _, _ in candidate_info:
+            baseline_scores = []
+            for doc_id, _, score, _ in candidate_info:
                 if doc_id in doc_map:
                     candidate_docs.append(doc_map[doc_id])
                     candidate_ids.append(doc_id)
+                    baseline_scores.append(score)
             if not candidate_docs:
                 continue
 
-            # ----- BERT-based Re-ranking using precomputed embeddings -----
+            # Normalize the baseline scores.
+            baseline_norm = normalize_scores(baseline_scores)
+
+            # ----- Hybrid BERT-based Re-ranking -----
             # Compute query embedding.
             query_embedding_bert = bert_embedder.encode(query_text)
-            # Assemble candidate embeddings from precomputed cache.
+            # Get candidate embeddings from precomputed cache.
             candidate_embeddings_bert = np.array([bert_embedding_dict[doc_id] for doc_id in candidate_ids])
-            # Compute vectorized cosine similarities.
-            similarities_bert = vectorized_cosine_similarity(query_embedding_bert, candidate_embeddings_bert)
-            bert_results = list(zip(candidate_docs, similarities_bert))
+            # Compute neural (BERT) cosine similarities.
+            neural_scores_bert = vectorized_cosine_similarity(query_embedding_bert, candidate_embeddings_bert)
+            neural_norm_bert = normalize_scores(neural_scores_bert.tolist())
+            # Combine the scores.
+            hybrid_scores_bert = [alpha * n + (1 - alpha) * b for n, b in zip(neural_norm_bert, baseline_norm)]
+            bert_results = list(zip(candidate_docs, hybrid_scores_bert))
             bert_results.sort(key=lambda x: x[1], reverse=True)
-            # Write results for BERT-based run.
             rank = 1
             for doc, score in bert_results[:100]:
                 out_bert.write(f"{query_id} Q0 {doc['_id']} {rank} {score:.4f} {run_tag_bert}\n")
                 rank += 1
 
-            # ----- USE-based Re-ranking using precomputed embeddings -----
-            # Compute query embedding (extract the 1D vector from the 2D array).
+            # ----- Hybrid USE-based Re-ranking -----
+            # Compute query embedding (extract 1D vector from USE output).
             query_embedding_use = use_embedder.encode(query_text)[0]
             candidate_embeddings_use = np.array([use_embedding_dict[doc_id] for doc_id in candidate_ids])
-            similarities_use = vectorized_cosine_similarity(query_embedding_use, candidate_embeddings_use)
-            use_results = list(zip(candidate_docs, similarities_use))
+            neural_scores_use = vectorized_cosine_similarity(query_embedding_use, candidate_embeddings_use)
+            neural_norm_use = normalize_scores(neural_scores_use.tolist())
+            hybrid_scores_use = [alpha * n + (1 - alpha) * b for n, b in zip(neural_norm_use, baseline_norm)]
+            use_results = list(zip(candidate_docs, hybrid_scores_use))
             use_results.sort(key=lambda x: x[1], reverse=True)
             rank = 1
             for doc, score in use_results[:100]:
                 out_use.write(f"{query_id} Q0 {doc['_id']} {rank} {score:.4f} {run_tag_use}\n")
                 rank += 1
 
-    print("Neural re-ranking results have been written to:")
+    print("Hybrid re-ranking results have been written to:")
     print("BERT-based:", output_bert)
     print("USE-based:", output_use)
     end_time = time.time()
     print("Total time: {:.2f} seconds".format(end_time - start_time))
+
 
 
