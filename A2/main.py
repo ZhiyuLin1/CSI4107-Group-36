@@ -12,31 +12,24 @@ from models.bert_model import BertEmbedder
 from models.use_model import USEEmbedder
 from neural_ranking import vectorized_cosine_similarity, normalize_scores
 
-
+# Load corpus documents from a JSON Lines file.
 def load_corpus(filepath="dataset/corpus.jsonl"):
-    """Load corpus documents from a JSON Lines file."""
     documents = []
     with open(filepath, "r", encoding="utf-8") as f:
         for line in f:
             documents.append(json.loads(line))
     return documents
 
-
+# Load queries from a JSON Lines file.
 def load_queries(filepath="dataset/queries.jsonl"):
-    """Load queries from a JSON Lines file."""
     queries = []
     with open(filepath, "r", encoding="utf-8") as f:
         for line in f:
             queries.append(json.loads(line))
     return queries
 
-
+# Load baseline results (BM25 from Assignment 1) from a file.
 def load_baseline_results(filepath="Results_A1_BM25.txt"):
-    """
-    Load baseline results (BM25 from Assignment 1) from a file.
-    Expected format per line: query_id Q0 doc_id rank score tag
-    Returns a dictionary mapping query_id to a list of tuples.
-    """
     results = defaultdict(list)  # {query_id: [(doc_id, rank, score, tag), ...]}
     with open(filepath, "r", encoding="utf-8") as f:
         for line in f:
@@ -56,23 +49,19 @@ def load_baseline_results(filepath="Results_A1_BM25.txt"):
 
 
 # Global variables (populated later) for fast lookup.
-doc_map = {}  # {doc_id: document}
-query_map = {}  # {query_id: query_text}
-baseline_results = {}  # baseline BM25 results, from Assignment 1.
+doc_map = {}
+query_map = {}
+baseline_results = {}
 bert_embedder = None
 use_embedder = None
-bert_embedding_dict = {}  # {doc_id: precomputed BERT embedding}
-use_embedding_dict = {}  # {doc_id: precomputed USE embedding}
+bert_embedding_dict = {}
+use_embedding_dict = {}
 alpha = 0.35
 run_tag_bert = "run_bert_hybrid"
 run_tag_use = "run_use_hybrid"
 
-
+# Process a single query: compute hybrid re-ranking using precomputed candidate embeddings
 def process_query(query_id):
-    """
-    Process a single query: compute hybrid re-ranking using precomputed candidate embeddings.
-    Returns a tuple: (query_id, bert_result_lines, use_result_lines)
-    """
     query_text = query_map.get(query_id, "")
     if not query_text:
         return (query_id, [], [])
@@ -89,7 +78,6 @@ def process_query(query_id):
     if not candidate_docs:
         return (query_id, [], [])
 
-    # --- Hybrid BERT-based Re-ranking ---
     # Compute query embedding using BERT.
     query_embedding_bert = bert_embedder.encode(query_text)
     # Get candidate embeddings (precomputed).
@@ -106,8 +94,7 @@ def process_query(query_id):
         bert_lines.append(f"{query_id} Q0 {doc['_id']} {rank_counter} {score:.4f} {run_tag_bert}\n")
         rank_counter += 1
 
-    # --- Hybrid USE-based Re-ranking ---
-    # Compute query embedding using USE (extracting 1D vector from the 2D output).
+    # Compute query embedding using USE (extracting 1D vector from the 2D output)
     query_embedding_use = use_embedder.encode(query_text)[0]
     candidate_embeddings_use = np.array([use_embedding_dict[doc_id] for doc_id in candidate_ids])
     neural_scores_use = vectorized_cosine_similarity(query_embedding_use, candidate_embeddings_use)
@@ -161,8 +148,8 @@ if __name__ == "__main__":
     use_embedding_dict = dict(zip(candidate_doc_ids, use_candidate_embeddings))
 
     # Define output file names.
-    output_bert = "Results_BERT_hybrid.txt"
-    output_use = "Results_USE_hybrid.txt"
+    output_bert = "Results_BERT.txt"
+    output_use = "Results_USE.txt"
 
     # Process queries concurrently using a ThreadPoolExecutor.
     query_ids = sorted(baseline_results.keys(), key=lambda q: int(q))
