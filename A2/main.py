@@ -106,7 +106,7 @@ if __name__ == "__main__":
     output_use = "Results_USE_hybrid.txt"
     run_tag_bert = "run_bert_hybrid"
     run_tag_use = "run_use_hybrid"
-    alpha = 0.5  # weight for neural score in hybrid ranking
+    alpha = 0.35  # weight for neural score in hybrid ranking
 
     with open(output_bert, "w", encoding="utf-8") as out_bert, \
             open(output_use, "w", encoding="utf-8") as out_use:
