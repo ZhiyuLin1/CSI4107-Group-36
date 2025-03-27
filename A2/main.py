@@ -1,3 +1,7 @@
+# Hengjing Zhang 300288003
+# Tom Cui 300345709
+# Zhiyu Lin 300255509
+
 import time
 import json
 from collections import defaultdict
