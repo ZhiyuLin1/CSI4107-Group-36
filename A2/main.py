@@ -71,7 +71,7 @@ if __name__ == "__main__":
     # Load corpus, queries, and baseline results.
     corpus = load_corpus()
     queries = load_queries()
-    baseline_results = load_baseline_results("Results_A1.txt")
+    baseline_results = load_baseline_results("Results_A1_BM25.txt")
     print(
         f"Loaded {len(corpus)} documents, {len(queries)} queries, and baseline results for {len(baseline_results)} queries.")
 

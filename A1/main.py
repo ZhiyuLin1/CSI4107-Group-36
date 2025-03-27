@@ -5,7 +5,7 @@
 import json
 from preprocessing import preprocess_text
 from indexing import build_inverted_index, save_inverted_index
-from ranking import compute_idf, rank_documents_for_query
+from ranking import compute_idf, rank_documents_for_query, rank_documents_for_query_bm25
 
 
 # Loads the corpus from a JSON Lines file.
@@ -48,32 +48,41 @@ if __name__ == "__main__":
     total_docs = len(corpus)
     idf = compute_idf(inverted_index, total_docs)
 
-    # (Optional) Filter queries if needed (e.g., only test queries).
-    # For example, if only queries with odd IDs are test queries:
-    # queries = [q for q in queries if int(q['_id']) % 2 == 1]
+    # Compute average document length (for BM25).
+    total_length = sum(len(doc.get('preprocessed_text', [])) for doc in corpus)
+    avg_doc_len = total_length / total_docs if total_docs > 0 else 0
 
     # Sort the queries in ascending order by their query ID.
     queries = sorted(queries, key=lambda q: int(q['_id']))
 
-    # run_tag
+    # Run tag for TREC output.
     run_tag = "my_run"
 
-    # Open the output file "Results.txt" to write ranking results.
-    output_filename = "Results.txt"
-    with open(output_filename, 'w', encoding='utf-8') as out:
+    # Open the output files to write ranking results.
+    output_tf_idf = "Results_TFIDF.txt"
+    output_bm25 = "Results_BM25.txt"
+
+    with open(output_tf_idf, 'w', encoding='utf-8') as out_tf_idf, \
+            open(output_bm25, 'w', encoding='utf-8') as out_bm25:
+
         # Process each query.
         for query in queries:
             query_id = query['_id']
-            # Assume the query text is stored under the field "text".
             query_text = query.get('text', '')
 
-            # Rank documents for this query using cosine similarity with TF-IDF.
-            ranked_docs = rank_documents_for_query(query_text, corpus, inverted_index, idf)
-
-            # Limit to the top 100 results.
-            top_results = ranked_docs[:100]
-            for rank, (doc_id, score) in enumerate(top_results, start=1):
-                # Write a line in the format: query_id Q0 doc_id rank score tag
+            # Rank documents using TF-IDF (cosine similarity).
+            ranked_tf_idf = rank_documents_for_query(query_text, corpus, inverted_index, idf)
+            top_tf_idf = ranked_tf_idf[:100]
+            for rank, (doc_id, score) in enumerate(top_tf_idf, start=1):
                 line = f"{query_id} Q0 {doc_id} {rank} {score:.4f} {run_tag}\n"
-                out.write(line)
-    print(f"Ranking results written to file '{output_filename}'.")
+                out_tf_idf.write(line)
+
+            # Rank documents using BM25.
+            ranked_bm25 = rank_documents_for_query_bm25(query_text, corpus, inverted_index, avg_doc_len)
+            top_bm25 = ranked_bm25[:100]
+            for rank, (doc_id, score) in enumerate(top_bm25, start=1):
+                line = f"{query_id} Q0 {doc_id} {rank} {score:.4f} {run_tag}\n"
+                out_bm25.write(line)
+
+    print(f"TF-IDF ranking results written to '{output_tf_idf}'.")
+    print(f"BM25 ranking results written to '{output_bm25}'.")
