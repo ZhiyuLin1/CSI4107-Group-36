@@ -2,11 +2,15 @@
 # Tom Cui 300345709
 # Zhiyu Lin 300255509
 
+import sys
 import time
 import json
 from collections import defaultdict
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor
+
+# Import tqdm for progress bars
+from tqdm import tqdm
 
 from models.bert_model import BertEmbedder
 from models.use_model import USEEmbedder
@@ -48,7 +52,7 @@ def load_baseline_results(filepath="Results_A1_BM25.txt"):
     return results
 
 
-# Global variables (populated later) for fast lookup.
+# Global variables
 doc_map = {}
 query_map = {}
 baseline_results = {}
@@ -65,6 +69,7 @@ def process_query(query_id):
     query_text = query_map.get(query_id, "")
     if not query_text:
         return (query_id, [], [])
+
     # Retrieve the top-100 baseline candidates for this query.
     candidate_info = baseline_results[query_id][:100]
     candidate_docs = []
@@ -80,7 +85,6 @@ def process_query(query_id):
 
     # Compute query embedding using BERT.
     query_embedding_bert = bert_embedder.encode(query_text)
-    # Get candidate embeddings (precomputed).
     candidate_embeddings_bert = np.array([bert_embedding_dict[doc_id] for doc_id in candidate_ids])
     neural_scores_bert = vectorized_cosine_similarity(query_embedding_bert, candidate_embeddings_bert)
     neural_norm_bert = normalize_scores(neural_scores_bert)
@@ -135,17 +139,32 @@ if __name__ == "__main__":
         for doc_id, _, _, _ in results:
             candidate_doc_ids.add(doc_id)
     candidate_doc_ids = list(candidate_doc_ids)
+
     print(f"Precomputing embeddings for {len(candidate_doc_ids)} candidate documents.")
+    # Ensure this line prints before we start the tqdm loop:
+    sys.stdout.flush()
 
-    # Precompute BERT embeddings for candidate documents.
-    bert_candidate_texts = [doc_map[doc_id]['text'] for doc_id in candidate_doc_ids if doc_id in doc_map]
-    bert_candidate_embeddings = bert_embedder.encode(bert_candidate_texts)
-    bert_embedding_dict = dict(zip(candidate_doc_ids, bert_candidate_embeddings))
+    # Filter out any doc_ids not in doc_map
+    valid_candidate_ids = [doc_id for doc_id in candidate_doc_ids if doc_id in doc_map]
 
-    # Precompute USE embeddings for candidate documents.
-    use_candidate_texts = [doc_map[doc_id]['text'] for doc_id in candidate_doc_ids if doc_id in doc_map]
-    use_candidate_embeddings = use_embedder.encode(use_candidate_texts)
-    use_embedding_dict = dict(zip(candidate_doc_ids, use_candidate_embeddings))
+    # Precompute BERT embeddings
+    bert_candidate_texts = [doc_map[doc_id]['text'] for doc_id in valid_candidate_ids]
+    bert_candidate_embeddings = []
+    batch_size = 100
+    for i in tqdm(range(0, len(bert_candidate_texts), batch_size), desc="Precomputing BERT embeddings"):
+        batch_texts = bert_candidate_texts[i: i + batch_size]
+        batch_embeddings = bert_embedder.encode(batch_texts)
+        bert_candidate_embeddings.extend(batch_embeddings)
+    bert_embedding_dict = dict(zip(valid_candidate_ids, bert_candidate_embeddings))
+
+    # Precompute USE embeddings
+    use_candidate_texts = [doc_map[doc_id]['text'] for doc_id in valid_candidate_ids]
+    use_candidate_embeddings_list = []
+    for i in tqdm(range(0, len(use_candidate_texts), batch_size), desc="Precomputing USE embeddings"):
+        batch_texts = use_candidate_texts[i: i + batch_size]
+        batch_embeddings = use_embedder.encode(batch_texts)
+        use_candidate_embeddings_list.extend(batch_embeddings)
+    use_embedding_dict = dict(zip(valid_candidate_ids, use_candidate_embeddings_list))
 
     # Define output file names.
     output_bert = "Results_BERT.txt"
@@ -153,12 +172,13 @@ if __name__ == "__main__":
 
     # Process queries concurrently using a ThreadPoolExecutor.
     query_ids = sorted(baseline_results.keys(), key=lambda q: int(q))
-    results_list = []
-    max_workers = 8  # Adjust this value based on your machine (e.g., number of CPU cores)
+    max_workers = 8
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = {executor.submit(process_query, qid): qid for qid in query_ids}
-        for future in futures:
-            results_list.append(future.result())
+        results_list = list(tqdm(
+            executor.map(process_query, query_ids),
+            total=len(query_ids),
+            desc="Processing queries"
+        ))
 
     # Sort results by query id (as integer).
     results_list.sort(key=lambda x: int(x[0]))
@@ -166,7 +186,7 @@ if __name__ == "__main__":
     # Write results to output files.
     with open(output_bert, "w", encoding="utf-8") as out_bert, \
             open(output_use, "w", encoding="utf-8") as out_use:
-        for query_id, bert_lines, use_lines in results_list:
+        for query_id, bert_lines, use_lines in tqdm(results_list, desc="Writing output files", total=len(results_list)):
             for line in bert_lines:
                 out_bert.write(line)
             for line in use_lines:
