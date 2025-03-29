@@ -133,9 +133,7 @@ We used the following data structures to support efficient retrieval and computa
 
 ## Sample queries
 
-----
-
-### Bert:
+### BERT:
 
 ```
 1 Q0 21257564 1 0.8089 run_bert
@@ -197,23 +195,23 @@ We used the following data structures to support efficient retrieval and computa
 
 ### Mean Average Precision (MAP) and P@10 Score
 
-The MAP and P@10 score is computed using `trec_eval` based on the results from the `Results_BERT.txt` and `Results_USE.txt` file. Please make sure to install `trec_eval` and use `make` command to build the executable for MAP.
+The `MAP` and `P@10` score is computed using `trec_eval` based on the results from the `Results_BERT.txt` and `Results_USE.txt` file. Please make sure to install `trec_eval` and use `make` command to build the executable for MAP.
 
-These were our MAP and P@10 results for `Results_BERT.txt`:
+These were our `MAP` and `P@10` results for `Results_BERT.txt`:
 
 ```
 map                     all     0.5452
 P_10                    all     0.0800
 ```
 
-These were our MAP and P@10 results for `Results_USE.txt`:
+These were our `MAP` and `P@10` results for `Results_USE.txt`:
 
 ```
 map                     all     0.5535
 P_10                    all     0.0800
 ```
 
-These were our MAP and P@10 results from `Assignment 1`:
+These were our `MAP` and `P@10` results from `Assignment 1`:
 
 ```
 map                     all     0.5337
@@ -222,7 +220,7 @@ P_10                    all     0.0787
 
 
 
-Both the BERT and USE hybrid models improved compared to the BM25 benchmark. the USE model had the highest MAP value (0.5535), which was slightly higher than BERT (0.5452) and BM25 (0.5337). Although the improvement in P@10 is small (from 0.0787 to 0.0800), the improvement in MAP suggests that the neural reordering strategy retrieved more relevant documents overall, even if it did not always retrieve the top 10.
+Both the `BERT` and `USE` hybrid models improved compared to the `BM25` benchmark. the `USE` model had the highest MAP value (0.5535), which was slightly higher than BERT (0.5452) and BM25 (0.5337). Although the improvement in P@10 is small (from 0.0787 to 0.0800), the improvement in MAP suggests that the neural reordering strategy retrieved more relevant documents overall, even if it did not always retrieve the top 10.
 
 This suggests that combining semantic representations from pre-trained neural models with traditional lexical scoring (via hybrid scoring) can be more effective for document ranking. The USE model seems to be slightly better at generalization for our dataset and query set, possibly due to the fact that it was trained on a wider range of sentence-level tasks.
 
