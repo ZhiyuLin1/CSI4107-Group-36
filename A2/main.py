@@ -61,8 +61,8 @@ use_embedder = None
 bert_embedding_dict = {}
 use_embedding_dict = {}
 alpha = 0.35
-run_tag_bert = "run_bert_hybrid"
-run_tag_use = "run_use_hybrid"
+run_tag_bert = "run_bert"
+run_tag_use = "run_use"
 
 # Process a single query: compute hybrid re-ranking using precomputed candidate embeddings
 def process_query(query_id):
