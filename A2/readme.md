@@ -1,7 +1,5 @@
 # CSI4107 Assignment 2
 
----
-
 **Henjing zhang		300288003**
 
 **Tom Cui		300345709**
@@ -12,7 +10,7 @@
 
 ## Work distribution
 
------
+
 
 
 
@@ -20,9 +18,7 @@
 
 ##  Functionality Overview
 
------
-
-This project implements a hybrid information retrieval system that re-ranks BM25 baseline results using neural embeddings from two models:
+This project implements a hybrid information retrieval system that re-ranks `BM25` baseline results using neural embeddings from two models:
 
 1. **BERT** (`bert_model.py`)
 2. **Universal Sentence Encoder (USE)** (`use_model.py`)
@@ -30,11 +26,11 @@ This project implements a hybrid information retrieval system that re-ranks BM25
 It performs the following tasks:
 
 - Loads queries and documents.
-- Loads BM25 results (from Assignment 1).
+- Loads `BM25` results (from Assignment 1).
 - Encodes query and document texts into embeddings.
 - Computes cosine similarity between queries and documents.
-- Combines neural scores with baseline BM25 scores using a hybrid scoring formula.
-- Outputs re-ranked top-100 results per query using both BERT and USE.
+- Combines neural scores with baseline `BM25` scores using a hybrid scoring formula.
+- Outputs re-ranked top-100 results per query using both `BERT` and `USE`.
 
 For our experiment, we implemented a hybrid re-ranking approach using two pre-trained models: **BERT** from the Sentence-Transformers library and the **Universal Sentence Encoder (USE)** from TensorFlow Hub. These models were chosen for their strong semantic encoding capabilities, allowing us to represent both queries and documents as dense vector embeddings. We first loaded the **BM25 results from Assignment 1**, which provided the top 100 candidate documents per query. Each document and query was then embedded using both BERT and USE separately. The BERT model we used was `"bert-base-nli-mean-tokens"`, while for USE we used the official TensorFlow Hub model `"https://tfhub.dev/google/universal-sentence-encoder/4"`. We precomputed document embeddings for efficiency and stored them in dictionaries, allowing for fast lookup during the re-ranking process.
 
@@ -74,9 +70,7 @@ To compute similarity, we used cosine similarity between query and document embe
 
 
 
-## algorithms, data structures, and optimizations
-
-----
+## Algorithms, Data structures, and Optimizations
 
 **Algorithms:**
 
@@ -98,8 +92,6 @@ We used a **hybrid re-ranking algorithm** that combines traditional lexical retr
 
    where alpha is set to 0.35 to give moderate weight to the neural model.
 
----------
-
 **Data Structures:**
 
 We used the following data structures to support efficient retrieval and computation:
@@ -107,8 +99,8 @@ We used the following data structures to support efficient retrieval and computa
 - **Dictionaries (HashMaps):**
   - `doc_map`: Maps `doc_id` to document content.
   - `query_map`: Maps `query_id` to query text.
-  - `bert_embedding_dict` / `use_embedding_dict`: Maps `doc_id` to its precomputed embedding (for BERT or USE).
-  - `baseline_results`: Maps `query_id` to a list of tuples containing BM25-ranked results.
+  - `bert_embedding_dict` / `use_embedding_dict`: Maps `doc_id` to its precomputed embedding (for `BERT` or `USE`).
+  - `baseline_results`: Maps `query_id` to a list of tuples containing `BM25` ranked results.
 - **Lists:**
   - Used to store candidate documents, embeddings, and final ranked results.
 - **NumPy Arrays:**
@@ -146,7 +138,9 @@ We used the following data structures to support efficient retrieval and computa
 1 Q0 13231899 8 0.5125 run_bert
 1 Q0 994800 9 0.4831 run_bert
 1 Q0 21456232 10 0.4787 run_bert
+```
 
+```
 3 Q0 4414547 1 0.9300 run_bert
 3 Q0 14717500 2 0.7544 run_bert
 3 Q0 2739854 3 0.7239 run_bert
@@ -172,7 +166,9 @@ We used the following data structures to support efficient retrieval and computa
 1 Q0 994800 8 0.5184 run_use
 1 Q0 10906636 9 0.5137 run_use
 1 Q0 13231899 10 0.5075 run_use
+```
 
+```
 3 Q0 4414547 1 0.9554 run_use
 3 Q0 2739854 2 0.8419 run_use
 3 Q0 23389795 3 0.8015 run_use
@@ -184,8 +180,6 @@ We used the following data structures to support efficient retrieval and computa
 3 Q0 2485101 9 0.5236 run_use
 3 Q0 32181055 10 0.5186 run_use
 ```
-
-
 
 
 
@@ -220,8 +214,8 @@ P_10                    all     0.0787
 
 
 
-Both the `BERT` and `USE` hybrid models improved compared to the `BM25` benchmark. the `USE` model had the highest MAP value (0.5535), which was slightly higher than BERT (0.5452) and BM25 (0.5337). Although the improvement in P@10 is small (from 0.0787 to 0.0800), the improvement in MAP suggests that the neural reordering strategy retrieved more relevant documents overall, even if it did not always retrieve the top 10.
+Both the `BERT` and `USE` hybrid models improved compared to the `BM25` benchmark. the `USE` model had the highest `MAP` value (0.5535), which was slightly higher than `BERT (0.5452)` and `BM25 (0.5337)`. Although the improvement in `P@10` is small (from 0.0787 to 0.0800), the improvement in `MAP` suggests that the neural reordering strategy retrieved more relevant documents overall, even if it did not always retrieve the top 10.
 
 This suggests that combining semantic representations from pre-trained neural models with traditional lexical scoring (via hybrid scoring) can be more effective for document ranking. The USE model seems to be slightly better at generalization for our dataset and query set, possibly due to the fact that it was trained on a wider range of sentence-level tasks.
 
-In conclusion, the hybrid approach succeeds in improving retrieval quality without replacing BM25 , demonstrating the benefits of combining lexical and semantic matching techniques.
+In conclusion, the hybrid approach succeeds in improving retrieval quality without replacing `BM25` , demonstrating the benefits of combining lexical and semantic matching techniques.
