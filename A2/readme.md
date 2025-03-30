@@ -1,6 +1,6 @@
 # CSI4107 Assignment 2
 
-**Henjing zhang		300288003**
+**Henjing Zhang		300288003**
 
 **Tom Cui		300345709**
 
@@ -8,13 +8,34 @@
 
 
 
-## Work distribution
+### Work distribution
 
+#### ==Hengjing Zhang, Tom Cui==
 
+**Baseline System & Indexing:**
 
+- Implemented the inverted index and TF‑IDF/BM25 ranking functions.
+- Ensured that the BM25 results are generated correctly so that they can be used as input for the hybrid re‑ranking.
 
+#### **==Zhiyu Lin, Tom Cui==**
 
+**Neural Models and Re‑Ranking Module:**
 
+- Developed the neural language model integration by implementing the modules for BERT and the Universal Sentence Encoder.
+- Designed and implemented the vectorized cosine similarity functions and neural re‑ranking functions in `neural_ranking.py`.
+- Worked on integrating neural embedding generation and ensuring that both BERT and USE re‑ranking methods yield MAP and P@10.
+
+#### **==Hengjing Zhang, Zhiyu Lin==**
+
+**System Integration & Performance Optimization:**
+
+- Updated the `main.py` for Assignment 2 that combines the baseline results with the neural re‑ranking outputs.
+
+- Implemented the performance improvements so that the overall running time is reduced and visual feedback is provided.
+
+- Coordinated the integration of all components, ensured that the system produces the correct output files, and performed the trec_eval for comparison with Assignment 1.
+
+  
 
 ##  Functionality Overview
 
