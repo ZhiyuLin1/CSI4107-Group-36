@@ -2,13 +2,13 @@
 
 **Henjing Zhang		300288003**
 
-**Tom Cui		300345709**
+**Tom Cui			300345709**
 
 **Zhiyu Lin		300255509**
 
 
 
-### Work distribution
+## Work distribution
 
 #### ==Hengjing Zhang, Tom Cui==
 
@@ -37,7 +37,7 @@
 
   
 
-##  Functionality Overview
+## Functionality Overview
 
 This project implements a hybrid information retrieval system that re-ranks `BM25` baseline results using neural embeddings from two models:
 
@@ -56,6 +56,27 @@ It performs the following tasks:
 For our experiment, we implemented a hybrid re-ranking approach using two pre-trained models: **BERT** from the Sentence-Transformers library and the **Universal Sentence Encoder (USE)** from TensorFlow Hub. These models were chosen for their strong semantic encoding capabilities, allowing us to represent both queries and documents as dense vector embeddings. We first loaded the **BM25 results from Assignment 1**, which provided the top 100 candidate documents per query. Each document and query was then embedded using both BERT and USE separately. The BERT model we used was `"bert-base-nli-mean-tokens"`, while for USE we used the official TensorFlow Hub model `"https://tfhub.dev/google/universal-sentence-encoder/4"`. We precomputed document embeddings for efficiency and stored them in dictionaries, allowing for fast lookup during the re-ranking process.
 
 To compute similarity, we used cosine similarity between query and document embeddings. These similarity scores were then normalized and combined with the baseline BM25 scores from Assignment 1 using a hybrid formula: `final_score = alpha * neural_score + (1 - alpha) * baseline_score`, with alpha set to 0.35. This method allowed us to balance the lexical matching strength of BM25 with the semantic understanding from neural models. We processed all queries in parallel using multithreading to speed up computation. The final re-ranked results were saved in two output files: `Results_BERT.txt` and `Results_USE.txt`. These files followed the TREC format and contained the top 100 ranked documents per query for each embedding model.
+
+
+
+## Folder Layout
+
+```
+A2/
+├── dataset/
+│   ├── corpus.jsonl         # Corpus file
+│   ├── queries.jsonl        # Queries file
+│   └── qrels/               
+│       └── test.tsv
+├── Results_A1_BM25.txt      # Baseline output from Assignment 1 BM25
+├── models/
+│   ├── bert_model.py        # BERT embedder module
+│   └── use_model.py         # USE embedder module
+├── neural_ranking.py        # Neural re-ranking functions using BERT and USE
+├── Results_BERT.txt		 # Output result file BERT
+├── Results_USE.txt       	 # Output result file USE
+└── main.py                  # Main driver that reads baseline results and applies neural re-ranking
+```
 
 
 
@@ -86,8 +107,6 @@ To compute similarity, we used cosine similarity between query and document embe
    ```
 
    This will output ranking results to `Results_BERT.txt` for BERT results and `Results_USE.txt` for Universal sentence encoder results.
-
-
 
 
 
@@ -139,8 +158,6 @@ We used the following data structures to support efficient retrieval and computa
     We parallelized query processing using Python’s `ThreadPoolExecutor` with multiple workers. This allows multiple queries to be processed simultaneously, making full use of available CPU cores.
 4. **Efficient Sorting and Output:**
     After computing scores, we sort results using Python’s built-in `sort()` with a custom key for performance and write only the top 100 ranked results per query to output files in TREC format.
-
-
 
 
 
@@ -205,8 +222,6 @@ We used the following data structures to support efficient retrieval and computa
 
 
 ## Result
-
----
 
 ### Mean Average Precision (MAP) and P@10 Score
 
